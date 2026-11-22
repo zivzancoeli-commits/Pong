@@ -1,21 +1,42 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-
+var playing = false;
+var lost = false;
+var boardWidth = 20;
+var boardHeight = 15;
+var ballX = 10;
+var ballY = 7;
+var dirY = 1;
+var dirX = -1;
+var ballSize = 25;
+var cellWidth = canvas.width / boardWidth;
+var cellHeight = canvas.height / boardHeight;
+var paddleY = 7;
+var score = 0;
+var firstMovement = 1;
+var backBallX = 10;
+var backBallY = 7;
+var backDirY = 1;
+var backDirX = -1;
+var leftPaddleY = 7;
+var rightPaddleY = 7;
+var backCanvasWidth = canvas.width - 30;
+var backCanvasHeight = canvas.height - 30;
+var backCellWidth = backCanvasWidth / boardWidth;
+var backCellHeight = backCanvasHeight / boardHeight;
+var lastMoveRight = 0;
+var lastMoveLeft = 0;
 var keys = {};
-
 document.addEventListener("keydown", function (event) {
     keys[event.key] = true;
 });
-
 document.addEventListener("keyup", function (event) {
     keys[event.key] = false;
 });
-
 canvas.addEventListener("click", function (event) {
     var rect = canvas.getBoundingClientRect();
     var mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
     var mouseY = (event.clientY - rect.top) * (canvas.height / rect.height);
-
     if (mouseX > canvas.width / 2 - 150 && mouseX < canvas.width / 2 - 150 + 300 && mouseY > canvas.height / 2 - 35 && mouseY < canvas.height / 2 + 35 && playing === false) {
         score = 0;
         ballX = 10;
@@ -26,7 +47,6 @@ canvas.addEventListener("click", function (event) {
         playing = true;
         lost = false;
     }
-
     if (mouseX > canvas.width / 2 - 150 && mouseX < canvas.width / 2 - 150 + 300 && mouseY > canvas.height / 2 + 70 && mouseY < canvas.height / 2 + 140 && lost && playing === false) {
         score = 0;
         ballX = 10;
@@ -38,35 +58,6 @@ canvas.addEventListener("click", function (event) {
         lost = false;
     }
 });
-
-var playing = false;
-var lost = false;
-var boardWidth = 20;
-var boardHeight = 15;
-var ballX = 10;
-var ballY = 7;
-// dir 1 = up or right   -1 = down / left
-var dirY = 1;
-var dirX = -1;
-var ballSize = 25;
-var cellWidth = canvas.width / boardWidth;
-var cellHeight = canvas.height / boardHeight;
-var paddleY = 7;
-var score = 0;
-var firstMovement = 1;
-
-// background
-var backBallX = 10;
-var backBallY = 7;
-var backDirY = 1;
-var backDirX = -1;
-var leftPaddleY = 7;
-var rightPaddleY = 7;
-var backCanvasWidth = canvas.width - 30;
-var backCanvasHeight = canvas.height - 30;
-var backCellWidth = backCanvasWidth / boardWidth;
-var backCellHeight = backCanvasHeight / boardHeight;
-
 function movement() {
     if (ballX < 2) {
         dirX *= -1;
@@ -84,7 +75,6 @@ function movement() {
     ballX = ballX + dirX;
     ballY = ballY + dirY;
 }
-
 function gameLoop() {
     if (keys["w"] || keys["ArrowUp"]) {
         if (paddleY > 1) {
@@ -114,7 +104,6 @@ function gameLoop() {
         ctx.textAlign = "center";
         ctx.fillText("Score: " + score, canvas.width / 2, 40);
     }
-    // lost
     if (lost && playing === false) {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -131,12 +120,9 @@ function gameLoop() {
         ctx.fillText("Start", canvas.width / 2, canvas.height / 2 + 10) // start
         ctx.fillText("Back", canvas.width / 2, canvas.height / 2 + 115) // back
     }
-    // main screen
     if (lost === false && playing === false) {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // cool background with a game of pong going on behind it
         ctx.fillStyle = "rgba(255, 255, 255, 0.4)"
         if (backBallX < 4 || backBallX > boardWidth - 4) {
             backDirX *= -1;
@@ -153,10 +139,14 @@ function gameLoop() {
             } else if (backBallY > rightPaddleY) {
                 rightPaddleY += 1;
             }
-            if (Math.random() > 0.5) {
+            if (Math.random() > 0.5 && lastMoveLeft === 1) {
                 leftPaddleY += 1;
-            } else {
+                lastMoveLeft = 0;
+            } else if (lastMoveRight === 1) {
                 leftPaddleY -= 1;
+                lastMoveLeft = 0;
+            } else {
+                lastMoveLeft = 1;
             }
         } else {
             if (backBallY < leftPaddleY) {
@@ -164,10 +154,14 @@ function gameLoop() {
             } else if (backBallY > leftPaddleY) {
                 leftPaddleY += 1;
             }
-            if (Math.random() > 0.5) {
+            if (Math.random() > 0.5 && lastMoveRight === 1) {
                 rightPaddleY += 1;
-            } else {
+                lastMoveRight = 0;
+            } else if (lastMoveRight === 1) {
                 rightPaddleY -= 1;
+                lastMoveRight = 0;
+            } else {
+                lastMoveRight = 1;
             }
         }
         if (leftPaddleY > boardHeight - 2) {
@@ -184,7 +178,6 @@ function gameLoop() {
         }
         backBallX += backDirX;
         backBallY += backDirY;
-        
         ctx.fillStyle = "white";
         ctx.fillRect(canvas.width / 2 - 150, canvas.height / 2 - 35, 300, 70); // start
         ctx.fillStyle = "black";
