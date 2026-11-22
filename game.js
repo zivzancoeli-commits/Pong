@@ -16,7 +16,7 @@ canvas.addEventListener("click", function (event) {
     var mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
     var mouseY = (event.clientY - rect.top) * (canvas.height / rect.height);
 
-    if (mouseX > canvas.width / 2 - 150 && mouseX < canvas.width / 2 - 150 + 300 && mouseY > canvas.height / 2 - 35 && mouseY < canvas.height / 2 + 35 && lost && playing === false) {
+    if (mouseX > canvas.width / 2 - 150 && mouseX < canvas.width / 2 - 150 + 300 && mouseY > canvas.height / 2 - 35 && mouseY < canvas.height / 2 + 35 && playing === false) {
         score = 0;
         ballX = 10;
         ballY = 7;
@@ -39,7 +39,7 @@ canvas.addEventListener("click", function (event) {
     }
 });
 
-var playing = true;
+var playing = false;
 var lost = false;
 var boardWidth = 20;
 var boardHeight = 15;
@@ -93,13 +93,16 @@ function gameLoop() {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "rgb(255, 255, 255)";
-        ctx.fillRect(0, 0, cellWidth, canvas.height);
         ctx.fillRect(ballX * cellWidth, ballY * cellHeight, cellWidth, cellHeight);
+        ctx.fillStyle = "rgb(125, 125, 125)"
+        ctx.fillRect(0, 0, cellWidth, canvas.height);
         ctx.fillRect(cellWidth * (boardWidth - 2), (paddleY * cellHeight) - cellHeight, cellWidth, cellHeight * 3)
+        ctx.fillStyle = "white";
         ctx.font = "24px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("Score: " + score, canvas.width / 2, 40);
     }
+    // lost
     if (lost && playing === false) {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -109,17 +112,26 @@ function gameLoop() {
         ctx.fillText("Score: " + score, canvas.width / 2, 100);
         // draw buttons
         ctx.fillRect(canvas.width / 2 - 150, canvas.height / 2 - 35, 300, 70); // start
-
+        
         ctx.fillRect(canvas.width / 2 - 150, canvas.height / 2 + 70, 300, 70); // back
         ctx.fillStyle = "black";
         ctx.font = "30px sans-serif";
         ctx.fillText("Start", canvas.width / 2, canvas.height / 2 + 10) // start
         ctx.fillText("Back", canvas.width / 2, canvas.height / 2 + 115) // back
     }
+    // main screen
     if (lost === false && playing === false) {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+        ctx.fillStyle = "white";
+        ctx.fillRect(canvas.width / 2 - 150, canvas.height / 2 - 35, 300, 70); // start
+        ctx.fillStyle = "black";
+        ctx.font = "30px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Start", canvas.width / 2, canvas.height / 2 + 10) // start
+        ctx.font = "96px sans-serif";
+        ctx.fillStyle = "white";
+        ctx.fillText("Pong", canvas.width / 2, 120);
     }
 }
 setInterval(gameLoop, 200);
