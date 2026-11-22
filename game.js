@@ -11,6 +11,34 @@ document.addEventListener("keyup", function (event) {
     keys[event.key] = false;
 });
 
+canvas.addEventListener("click", function (event) {
+    var rect = canvas.getBoundingClientRect();
+    var mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
+    var mouseY = (event.clientY - rect.top) * (canvas.height / rect.height);
+
+    if (mouseX > canvas.width / 2 - 150 && mouseX < canvas.width / 2 - 150 + 300 && mouseY > canvas.height / 2 - 35 && mouseY < canvas.height / 2 + 35 && lost && playing === false) {
+        score = 0;
+        ballX = 10;
+        ballY = 7;
+        dirX = -1;
+        paddleY = 7;
+        firstMovement = 1;
+        playing = true;
+        lost = false;
+    }
+
+    if (mouseX > canvas.width / 2 - 150 && mouseX < canvas.width / 2 - 150 + 300 && mouseY > canvas.height / 2 + 70 && mouseY < canvas.height / 2 + 140 && lost && playing === false) {
+        score = 0;
+        ballX = 10;
+        ballY = 7;
+        dirX = -1;
+        paddleY = 7;
+        firstMovement = 1;
+        playing = false;
+        lost = false;
+    }
+});
+
 var playing = true;
 var lost = false;
 var boardWidth = 20;
@@ -87,35 +115,11 @@ function gameLoop() {
         ctx.font = "30px sans-serif";
         ctx.fillText("Start", canvas.width / 2, canvas.height / 2 + 10) // start
         ctx.fillText("Back", canvas.width / 2, canvas.height / 2 + 115) // back
-        canvas.addEventListener("click", function (event) {
-            var rect = canvas.getBoundingClientRect();
-            var mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
-            var mouseY = (event.clientY - rect.top) * (canvas.height / rect.height);
-
-            if (mouseX > canvas.width / 2 - 150 && mouseX < canvas.width / 2 - 150 + 300 && mouseY > canvas.height / 2 - 35 && mouseY < canvas.height / 2 + 35) {
-                score = 0;
-                ballX = 10;
-                ballY = 7;
-                dirX = -1;
-                paddleY = 7;
-                playing = true;
-                lost = false;
-            }
-
-            if (mouseX > canvas.width / 2 - 150 && mouseX < canvas.width / 2 - 150 + 300 && mouseY > canvas.height / 2 + 70 && mouseY < canvas.height / 2 + 140) {
-                score = 0;
-                ballX = 10;
-                ballY = 7;
-                dirX = -1;
-                paddleY = 7;
-                playing = false;
-                lost = false;
-            }
-        });
     }
     if (lost === false && playing === false) {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     }
 }
 setInterval(gameLoop, 200);
