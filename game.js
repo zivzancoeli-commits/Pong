@@ -55,6 +55,18 @@ var paddleY = 7;
 var score = 0;
 var firstMovement = 1;
 
+// background
+var backBallX = 10;
+var backBallY = 7;
+var backDirY = 1;
+var backDirX = -1;
+var leftPaddleY = 7;
+var rightPaddleY = 7;
+var backCanvasWidth = canvas.width - 30;
+var backCanvasHeight = canvas.height - 30;
+var backCellWidth = backCanvasWidth / boardWidth;
+var backCellHeight = backCanvasHeight / boardHeight;
+
 function movement() {
     if (ballX < 2) {
         dirX *= -1;
@@ -123,6 +135,56 @@ function gameLoop() {
     if (lost === false && playing === false) {
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // cool background with a game of pong going on behind it
+        ctx.fillStyle = "rgba(255, 255, 255, 0.4)"
+        if (backBallX < 4 || backBallX > boardWidth - 4) {
+            backDirX *= -1;
+        }
+        if (backBallY > boardHeight - 2 || backBallY < 1) {
+            backDirY *= -1;
+        }
+        ctx.fillRect(backBallX * backCellWidth, backBallY * backCellHeight, backCellWidth, backCellHeight);
+        ctx.fillRect(backCellWidth * (boardWidth - 2), (rightPaddleY * backCellHeight) - backCellHeight, backCellWidth, backCellHeight * 3) // right
+        ctx.fillRect(backCellWidth * 2, (leftPaddleY * backCellHeight) - backCellHeight, backCellWidth, backCellHeight * 3) // left
+        if (backDirX === 1) {
+            if (backBallY < rightPaddleY) {
+                rightPaddleY -= 1;
+            } else if (backBallY > rightPaddleY) {
+                rightPaddleY += 1;
+            }
+            if (Math.random() > 0.5) {
+                leftPaddleY += 1;
+            } else {
+                leftPaddleY -= 1;
+            }
+        } else {
+            if (backBallY < leftPaddleY) {
+                leftPaddleY -= 1;
+            } else if (backBallY > leftPaddleY) {
+                leftPaddleY += 1;
+            }
+            if (Math.random() > 0.5) {
+                rightPaddleY += 1;
+            } else {
+                rightPaddleY -= 1;
+            }
+        }
+        if (leftPaddleY > boardHeight - 2) {
+            leftPaddleY = boardHeight - 2;
+        }
+        if (leftPaddleY < 1) {
+            leftPaddleY = 1;
+        }
+        if (rightPaddleY > boardHeight - 2) {
+            rightPaddleY = boardHeight - 2;
+        }
+        if (rightPaddleY < 1) {
+            rightPaddleY = 1;
+        }
+        backBallX += backDirX;
+        backBallY += backDirY;
+        
         ctx.fillStyle = "white";
         ctx.fillRect(canvas.width / 2 - 150, canvas.height / 2 - 35, 300, 70); // start
         ctx.fillStyle = "black";
